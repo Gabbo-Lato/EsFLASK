@@ -2,6 +2,7 @@ from flask import Flask, render_template, redirect, url_for, request, flash, ses
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from utils import richiesta
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'  # Semplice database SQLite
@@ -24,7 +25,8 @@ def load_user(user_id):
 
 @app.route('/')
 def home():
-    return render_template('home.html')
+    dati = richiesta()
+    return render_template('home.html', username = current_user.username)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -72,6 +74,16 @@ def logout():
     logout_user()
     flash('You have been logged out.', 'info')
     return redirect(url_for('home'))
+
+@app.route('/cat')
+def cat():
+    fact = get_random_cat_fact()
+    return render_template('cat.html', fact=fact)
+
+@app.route('/new_cat_fact')
+def new_cat_fact():
+    fact = get_random_cat_fact()
+    return render_template('cat.html', fact=fact)
 
 if __name__ == '__main__':
     db.create_all() 
